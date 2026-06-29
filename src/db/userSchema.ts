@@ -1,10 +1,12 @@
-import mongoose , {Schema , Document, Model} from 'mongoose';
+import mongoose , {Schema , Document, Model,Types} from 'mongoose';
 import bcrypt from 'bcrypt';
+import { array } from 'node:stream/iter';
 
 export interface IUser extends Document{
     fullname : string,
     username : string,
     password : string,
+    todos : Array<Types.ObjectId>,
     createdAt : Date,
     updatedAt : Date,
     matchPassword (enteredPassword : string): Promise<boolean>,
@@ -27,6 +29,10 @@ const userSchema : Schema<IUser> = new Schema(
             required : [true, 'Password is required'],
             select : false,
             trim : true,
+        },
+        todos : {
+            type : [Types.ObjectId],
+            ref : 'Todo',
         },
     },{
         timestamps : true,

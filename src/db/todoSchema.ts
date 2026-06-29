@@ -1,8 +1,10 @@
-import mongoose , {Schema, Document, Model} from 'mongoose';
+import mongoose , {Schema, Document, Model, Types} from 'mongoose';
+import User from './userSchema.js';
 
 export interface ITodo extends Document{
     title : string,
     description : string,
+    createdBy : Types.ObjectId,
     createdAt : Date,
     updatedAt : Date,
 }
@@ -18,6 +20,10 @@ const todoSchema : Schema<ITodo> = new Schema(
             type : String,
             required : [true, 'Description is Required'],
             trim : true,
+        },
+        createdBy : {
+            id : Types.ObjectId,
+            ref : 'User',
         },
     },{
         timestamps : true,
