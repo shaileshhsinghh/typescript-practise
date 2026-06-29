@@ -45,7 +45,7 @@ export const protect: Routehandler = async (req, res, next) => {
             return;
         }
 
-        req.user = user;
+        req.user = user._id;
 
         next();
     } catch (error: any) {

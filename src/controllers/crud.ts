@@ -1,23 +1,30 @@
 import { NextFunction, Request, Response, } from "express";
 import Todo, { ITodo } from "../db/todoSchema.js";
+import User from "../db/userSchema.js";
+import { Authrequest } from "../middlewares/authorisation.js";
 
 type RequestHandler = (
-    req : Request,
+    req : Authrequest,
     res : Response,
     next : NextFunction,
 ) => Promise<void>;
 
 //create
-export const createTodo : RequestHandler = async(req , res , next) => {
-    try{
-        const { title  ,description  }  = req.body;
+export const createTodo: RequestHandler = async (req, res, next) => {
+    try {
+        const { title, description } = req.body;
+        const userId = req.user.id;  
 
-        const todo = await Todo.create({title, description});
+        const todo : ITodo = await Todo.create({ title, description, createdBy: userId });
+
+        await User.findByIdAndUpdate(userId, {
+            $push: { todos: todo._id }
+        });
 
         res.status(201).json({
-            success : true,
-        })
-    } catch(error : any){
+            success: true,
+        });
+    } catch (error: any) {
         next(error);
     }
 };
@@ -25,9 +32,16 @@ export const createTodo : RequestHandler = async(req , res , next) => {
 //readall
 export const getTodos : RequestHandler = async(req , res , next) => {
     try{
-        const todos = await Todo.find();
+
+        const userId = req.user.id; 
+
+        const user = await User.findById(userId).populate('todos');
          
-        res.json(todos);
+        res.status(200).json({
+            success : true,
+            todos : user ?.todos || [],
+        });
+
     } catch(error : any){
         next(error);
     }
@@ -58,19 +72,27 @@ export const updateTodo : RequestHandler = async(req , res , next) => {
 };
 
 //delete
-export const deleteTodo : RequestHandler = async(req, res , next) => {
-    try{
+export const deleteTodo: RequestHandler = async (req, res, next) => {
+    try {
+        const userId = req.user.id;
+
         const todo = await Todo.findByIdAndDelete(req.params.id);
 
-        if(!todo){
+        if (!todo) {
             next(new Error('Todo not found'));
             return;
         }
 
+        
+        await User.findByIdAndUpdate(userId, {
+            $pull: { todos: todo._id }
+        });
+
         res.json({
-            success : true,
-        })
-    } catch (error : any) {
+            success: true,
+        });
+        
+    } catch (error: any) {
         next(error);
     }
-}
+};
