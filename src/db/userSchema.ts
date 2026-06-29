@@ -7,6 +7,7 @@ export interface IUser extends Document{
     password : string,
     createdAt : Date,
     updatedAt : Date,
+    matchPassword (enteredPassword : string): Promise<boolean>,
 }
 
 const userSchema : Schema<IUser> = new Schema(
