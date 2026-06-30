@@ -7,7 +7,7 @@ const router : Router = Router();
 
 router.post('/register',registerUser);
 
-router.post('login',protect,loginUser);
+router.post('/login',loginUser);
 
 router.get('/getall',protect,getTodos);
 

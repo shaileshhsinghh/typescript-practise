@@ -39,7 +39,7 @@ export const loginUser: Routehandler = async (req, res, next) => {
     try {
         const { username, password } = req.body;
 
-        const user: IUser | null = await User.findOne({ username });
+        const user: IUser | null = await User.findOne({ username }).select('+password');
 
         if (user && (await user.matchPassword(password))) {
             res.json({

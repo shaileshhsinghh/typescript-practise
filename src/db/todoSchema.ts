@@ -22,7 +22,7 @@ const todoSchema : Schema<ITodo> = new Schema(
             trim : true,
         },
         createdBy : {
-            id : Types.ObjectId,
+            type : Types.ObjectId,
             ref : 'User',
         },
     },{

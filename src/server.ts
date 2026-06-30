@@ -22,6 +22,7 @@ ConnectDB();
 
 app.use(express.json());
 
+
 app.use(routes);
 
 app.use(NotFound);
